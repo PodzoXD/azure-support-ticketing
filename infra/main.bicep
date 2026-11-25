@@ -1,6 +1,9 @@
 param location string = resourceGroup().location
 param myIp string
 param adminPublicKey string
+param budgetEmail string
+param budgetStartDate string = utcNow('yyyy-MM-01')
+param adminUsername string = 'azureuser'
 
 resource vnet 'Microsoft.Network/virtualNetworks@2026-03-01' = {
   name: 'vnet-ticketing'
@@ -87,14 +90,14 @@ resource vm 'Microsoft.Compute/virtualMachines@2026-04-01' = {
       vmSize: 'Standard_D2s_v5'
     }
     osProfile: {
+      adminUsername: adminUsername
       computerName: 'vm-ticketing'
-      adminUsername: 'azureuser'
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
           publicKeys: [
             {
-              path: '/home/azureuser/.ssh/authorized_keys'
+              path: '/home/${adminUsername}/.ssh/authorized_keys'
               keyData: adminPublicKey
             }
           ]
@@ -102,7 +105,12 @@ resource vm 'Microsoft.Compute/virtualMachines@2026-04-01' = {
       }
     }
     storageProfile: {
-      imageReference: { publisher: 'Canonical', offer: 'ubuntu-24_04-lts', sku: 'server', version: 'latest' }
+      imageReference: {
+        publisher: 'Canonical'
+        offer: 'ubuntu-24_04-lts'
+        sku: 'server'
+        version: 'latest'
+      }
       osDisk: {
         createOption: 'FromImage'
         managedDisk: {
@@ -112,11 +120,28 @@ resource vm 'Microsoft.Compute/virtualMachines@2026-04-01' = {
     }
     networkProfile: {
       networkInterfaces: [
-        {
-          id: nic.id
-        }
+        { id: nic.id }
       ]
     }
   }
 }
 
+resource budget 'Microsoft.Consumption/budgets@2026-06-01' = {
+  name: 'budget-ticketing-dev'
+  properties: {
+    amount: 20
+    category: 'Cost'
+    timeGrain: 'Monthly'
+    timePeriod: {
+      startDate: budgetStartDate
+    }
+    notifications: {
+      prog80: {
+        enabled: true
+        operator: 'GreaterThan'
+        threshold: 80
+        contactEmails: [budgetEmail]
+      }
+    }
+  }
+}
