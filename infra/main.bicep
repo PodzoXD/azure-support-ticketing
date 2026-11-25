@@ -52,6 +52,20 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2026-03-01' = {
           destinationPortRange: '22'
         }
       }
+
+      {
+        name: 'Allow-HTTP-MyIP'
+        properties: {
+          priority: 1010
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourceAddressPrefix: '${myIp}/32'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '80'
+        }
+      }
     ]
   }
 }
@@ -92,6 +106,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2026-04-01' = {
     osProfile: {
       adminUsername: adminUsername
       computerName: 'vm-ticketing'
+      customData: base64(loadTextContent('cloud-init.yaml'))
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
