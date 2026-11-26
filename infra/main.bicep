@@ -4,10 +4,16 @@ param adminPublicKey string
 param budgetEmail string
 param budgetStartDate string = utcNow('yyyy-MM-01')
 param adminUsername string = 'azureuser'
+param tags object = {
+  projekt: 'ticketing'
+  srodowisko: 'dev'
+  wlasciciel: 'mateusz'
+}
 
 resource vnet 'Microsoft.Network/virtualNetworks@2026-03-01' = {
   name: 'vnet-ticketing'
   location: location
+  tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -37,6 +43,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2026-03-01' = {
 resource nsg 'Microsoft.Network/networkSecurityGroups@2026-03-01' = {
   name: 'nsg-app'
   location: location
+  tags: tags
   properties: {
     securityRules: [
       {
@@ -76,6 +83,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2026-03-01' = {
 resource pip 'Microsoft.Network/publicIPAddresses@2026-03-01' = {
   name: 'pip-ticketing'
   location: location
+  tags: tags
   sku: { name: 'Standard' }
   properties: {
     publicIPAllocationMethod: 'Static'
@@ -85,6 +93,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2026-03-01' = {
 resource nic 'Microsoft.Network/networkInterfaces@2026-03-01' = {
   name: 'nic-ticketing'
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {
@@ -102,6 +111,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2026-03-01' = {
 resource vm 'Microsoft.Compute/virtualMachines@2026-04-01' = {
   name: 'vm-ticketing'
   location: location
+  tags: tags
   properties: {
     hardwareProfile: {
       vmSize: 'Standard_D2s_v5'
