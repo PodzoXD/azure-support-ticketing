@@ -3,6 +3,17 @@ package_update: true
 packages:
   - docker.io
   - docker-compose-v2
+
+write_files: 
+  - path: /opt/helpdesk/docker-compose.override.yml
+    content: |
+      services:
+        mariadb:
+          restart: unless-stopped
+        redis:
+          restart: unless-stopped
+        frappe:
+          restart: unless-stopped
 runcmd:
   - usermod -aG docker azureuser 
   - mkdir -p /opt/helpdesk
