@@ -4,7 +4,8 @@ Ticketing system for a 6-person IT support company, deployed on Microsoft Azure
 as Infrastructure as Code (Bicep). Proof of concept for replacing osTicket
 with Frappe Helpdesk.
 
-## Architecture (current)
+## Architecture 
+![Frappe Helpdesk running on Azure](docs/helpdesk.png)
 
 - Virtual network `10.0.0.0/16` with two subnets: `snet-app` (`10.0.1.0/24`)
   and `snet-db` (`10.0.2.0/24`)
@@ -14,6 +15,7 @@ with Frappe Helpdesk.
   password login disabled
 - Static public IP and network interface
 - Resource group budget with an e-mail alert at 80% of the limit
+- Frappe Helpdesk installed automatically by cloud-init (Docker Compose), reachable on port 8000 only from the admin IP
 
 ## Deploy
 
@@ -34,6 +36,6 @@ Clean up: `az group delete --name rg-ticketing-dev --yes`
 ## Roadmap
 
 - [x] Network, NSG, VM and budget as code
-- [ ] Frappe Helpdesk in Docker on the VM (cloud-init)
+- [x] Frappe Helpdesk in Docker on the VM (cloud-init)
 - [ ] Backups with a tested restore
 - [ ] Azure Monitor alerts

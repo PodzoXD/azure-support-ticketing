@@ -5,4 +5,8 @@ packages:
   - docker-compose-v2
 runcmd:
   - usermod -aG docker azureuser 
-  
+  - mkdir -p /opt/helpdesk
+  - cd /opt/helpdesk/ && wget --output-document=docker-compose.yml https://raw.githubusercontent.com/frappe/helpdesk/develop/docker/docker-compose.yml 
+  - cd /opt/helpdesk/ && wget --output-document=init.sh https://raw.githubusercontent.com/frappe/helpdesk/develop/docker/init.sh
+  - cd /opt/helpdesk/ && sed -i '1a printf "[client]\\nskip-ssl\\n" > ~/.my.cnf' init.sh
+  - cd /opt/helpdesk && docker compose up -d 

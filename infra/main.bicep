@@ -54,7 +54,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2026-03-01' = {
       }
 
       {
-        name: 'Allow-HTTP-MyIP'
+        name: 'Allow-Frappe-MyIP'
         properties: {
           priority: 1010
           direction: 'Inbound'
@@ -63,7 +63,10 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2026-03-01' = {
           sourceAddressPrefix: '${myIp}/32'
           sourcePortRange: '*'
           destinationAddressPrefix: '*'
-          destinationPortRange: '80'
+          destinationPortRanges: [
+            '8000'
+            '9000'
+          ]
         }
       }
     ]
